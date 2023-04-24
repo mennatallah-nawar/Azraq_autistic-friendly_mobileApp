@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
@@ -39,7 +38,7 @@ public class GameScript : MonoBehaviour
        
         fadyyy.position = new Vector2(-9.80f, 0.21f);
         print(fadyyy);
-    } 
+    }
 
     // Update is called once per frame  
     void Update()
@@ -120,13 +119,6 @@ public class GameScript : MonoBehaviour
                 }
             }
 
-
-            
-
-
-
-
-             
         }
     }
 }
