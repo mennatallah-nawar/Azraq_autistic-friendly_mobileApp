@@ -57,4 +57,14 @@ public class PagesNav : MonoBehaviour
     {
         SceneManager.LoadScene("ConnectedDevices");
     }
+
+    public void OpenLogin()
+    {
+        SceneManager.LoadScene("Login");
+    }
+
+    public void OpenStart()
+    {
+        SceneManager.LoadScene("Start");
+    }
 }
