@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using UnityEngine.SceneManagement;
+using UnityEngine.Networking;
+using Newtonsoft.Json;
 
 public class BackCamera : MonoBehaviour
 {
@@ -13,7 +15,9 @@ public class BackCamera : MonoBehaviour
     public RawImage background;
     public AspectRatioFitter fit;
 
+    public static string BackCamPrediction;
 
+    [SerializeField] public JSONReader JsonObject;
 
     // Start is called before the first frame update
     void Start()
@@ -67,19 +71,74 @@ public class BackCamera : MonoBehaviour
 
     public void TakePhoto()
     {
-        ScreenCapture.CaptureScreenshot("Photo.png");
-
+        ScreenCapture.CaptureScreenshot(Application.dataPath + "/Photo.jpg");
+        StartCoroutine(Upload());
+        Debug.Log("Photo saved");
         //Texture2D photo = new Texture2D(BackCam.width, BackCam.height);
         //photo.SetPixels(BackCam.GetPixels());
         //photo.Apply();
         ////Encode to a PNG
         //byte[] bytes = photo.EncodeToPNG();
         //string path = Application.persistentDataPath + "photo.png";
-        //File.WriteAllBytes(path, bytes);
+        //File.WriteAllBytes(path, bytes);        
+    }
 
-        Debug.Log("Photo saved");
-        BarController.progress++;
-        BackCam.Stop();
+    public void Back()
+    {
+        if (BackCam != null)
+        {
+            BackCam.Stop();
+        }
         SceneManager.LoadScene("Home");
+    }
+
+    IEnumerator Upload()
+    {
+        string UploadImage_URL = "https://fersystem-lfoazpk3ca-lm.a.run.app/predict";
+        WWWForm form = new WWWForm();
+
+        form.AddBinaryData("file", File.ReadAllBytes(Application.dataPath + "/Photo.jpg"));
+        //form.AddField("UserID", "1");
+
+        using (UnityWebRequest request = UnityWebRequest.Post(UploadImage_URL, form))
+        {
+            yield return request.SendWebRequest();
+            //Debug.Log(request.responseCode);
+
+            if (request.result == UnityWebRequest.Result.ProtocolError)
+            {
+                Debug.Log(request.result);
+                Debug.Log("Protocol Error");
+                Debug.Log(request.error);
+                Debug.Log("Error Code" + request.responseCode);
+            }
+
+            if (request.result == UnityWebRequest.Result.DataProcessingError)
+            {
+                Debug.Log(request.result);
+                Debug.Log("DataProcessingError");
+                Debug.Log(request.error);
+                Debug.Log("Error Code" + request.responseCode);
+            }
+
+            if (request.result == UnityWebRequest.Result.ConnectionError)
+            {
+                Debug.Log(request.result);
+                Debug.Log(request.error);
+                Debug.Log("ConnectionError");
+                Debug.Log("Error Code" + request.responseCode);
+            }
+
+            if (request.responseCode == 200)
+            {
+                //Debug.Log("Done");
+                Debug.Log("Response:" + request.downloadHandler.text);
+
+                JsonObject = JsonUtility.FromJson<JSONReader>(request.downloadHandler.text);
+                BackCamPrediction = JsonObject.prediction;
+            }
+        }
+
+        Back(); //POPUP notification in home page with feeling
     }
 }

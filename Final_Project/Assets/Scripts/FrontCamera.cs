@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using UnityEngine.SceneManagement;
+using UnityEngine.Networking;
+using Newtonsoft.Json;
 
 public class FrontCamera : MonoBehaviour
 {
@@ -13,9 +15,11 @@ public class FrontCamera : MonoBehaviour
     public RawImage background;
     public AspectRatioFitter fit;
 
+    public static bool WaitResult = false;
+    public static string prediction = null;
 
+    [SerializeField] public JSONReader JsonObject;
 
-    // Start is called before the first frame update
     void Start()
     {
         defaultBackground = background.texture;
@@ -28,9 +32,9 @@ public class FrontCamera : MonoBehaviour
             return;
         }
 
-        for(int i = 0; i < devices.Length; i++)
+        for (int i = 0; i < devices.Length; i++)
         {
-            if(devices[i].isFrontFacing)
+            if (devices[i].isFrontFacing)
             {
                 frontCam = new WebCamTexture(devices[i].name, Screen.width, Screen.height);
             }
@@ -67,8 +71,9 @@ public class FrontCamera : MonoBehaviour
 
     public void TakePhoto()
     {
-        ScreenCapture.CaptureScreenshot("SelfiePhoto.png");
-
+        ScreenCapture.CaptureScreenshot(Application.dataPath + "/SelfiePhoto.jpg");
+        StartCoroutine(Upload());
+        Debug.Log("SelfiePhoto saved");
         //Texture2D photo = new Texture2D(frontCam.width, frontCam.height);
         //photo.SetPixels(frontCam.GetPixels());
         //photo.Apply();
@@ -76,10 +81,66 @@ public class FrontCamera : MonoBehaviour
         //byte[] bytes = photo.EncodeToPNG();
         //string path = Application.persistentDataPath + "photo.png";
         //File.WriteAllBytes(path, bytes);
+    }
 
-        Debug.Log("SelfiePhoto saved");
-        frontCam.Stop();
-        BarController.progress++;
+    public void Back()
+    {
+        if (frontCam != null)
+        {
+            frontCam.Stop();
+        }
         SceneManager.LoadScene("Wheel");
+    }
+
+    IEnumerator Upload()
+    {
+        string UploadImage_URL = "https://fersystem-lfoazpk3ca-lm.a.run.app/predict";
+        WWWForm form = new WWWForm();
+
+        form.AddBinaryData("file", File.ReadAllBytes(Application.dataPath + "/SelfiePhoto.jpg"));
+        //form.AddField("UserID", "1");
+
+        using (UnityWebRequest request = UnityWebRequest.Post(UploadImage_URL, form))
+        {
+            yield return request.SendWebRequest();
+            //Debug.Log(request.responseCode);
+
+            if (request.result == UnityWebRequest.Result.ProtocolError)
+            {
+                Debug.Log(request.result);
+                Debug.Log("Protocol Error");
+                Debug.Log(request.error);
+                Debug.Log("Error Code" + request.responseCode);
+            }
+
+            if (request.result == UnityWebRequest.Result.DataProcessingError)
+            {
+                Debug.Log(request.result);
+                Debug.Log("DataProcessingError");
+                Debug.Log(request.error);
+                Debug.Log("Error Code" + request.responseCode);
+            }
+
+            if (request.result == UnityWebRequest.Result.ConnectionError)
+            {
+                Debug.Log(request.result);
+                Debug.Log(request.error);
+                Debug.Log("ConnectionError");
+                Debug.Log("Error Code" + request.responseCode);
+            }
+
+            if (request.responseCode == 200)
+            {
+                //Debug.Log("Done");
+                WaitResult = true;
+                Debug.Log("Response:" + request.downloadHandler.text);
+ 
+                JsonObject = JsonUtility.FromJson<JSONReader>(request.downloadHandler.text);
+                prediction = JsonObject.prediction;
+            }
+
+            Back();
+
+        }
     }
 }

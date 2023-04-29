@@ -14,7 +14,8 @@ public class Wheel : MonoBehaviour
     private bool spinningAllowed;
     private int finalAngle;
 
-    private string feeling;
+    public static string FeelingFromWheel;
+    //private string feeling;
 
 
     //public TMP_Text feelingText;
@@ -22,18 +23,18 @@ public class Wheel : MonoBehaviour
     // Use this for initialization
     public void Start()
     {
-        spinningAllowed = true;
-    
+        if (FrontCamera.WaitResult == true)
+        {
+            //prevent spinning wheel till show result
+            spinningAllowed = false;
+            CheckOutAct();
+        }
+        else
+        {
+            spinningAllowed = true;
+        }
     }
 
-    // Update is called once per frame
-
-    //public void Update()
-    //{
-    //    if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began && spinningAllowed)
-
-    //        StartCoroutine(Spin());
-    //}
 
     public void StartSpin()
     {
@@ -66,26 +67,27 @@ public class Wheel : MonoBehaviour
         switch (finalAngle)
         {
             case 0:
-                feeling = "happiness";
+                FeelingFromWheel = "Happy";
                 //feelingText.text = feeling;
                 break;
             case 60:
-                feeling = "fear";
+                FeelingFromWheel = "Fear";
                 break;
             case 120:
-                feeling = "surprise";
+                FeelingFromWheel = "Surprise";
                 break;
             case 180:
-                feeling = "anger";
+                FeelingFromWheel = "Angry";
                 break;
             case 240:
-                feeling = "sadness";
+                FeelingFromWheel = "Sad";
                 break;
             case 300:
-                feeling = "disgust";
+                FeelingFromWheel = "Disgust";
                 break;
         }
-        WriteString();
+        Debug.Log(FeelingFromWheel);
+        //WriteString();
         //spinningAllowed = true;
     }
 
@@ -94,7 +96,7 @@ public class Wheel : MonoBehaviour
         string path = Application.persistentDataPath + "/feelings.txt";
         //Write some text to the test.txt file
         StreamWriter writer = new StreamWriter(path, true);
-        writer.WriteLine(feeling);
+        writer.WriteLine(FeelingFromWheel);
         writer.Close();
         StreamReader reader = new StreamReader(path);
         //Print the text from the file
@@ -105,14 +107,32 @@ public class Wheel : MonoBehaviour
 
     public void changeScene()
     {
-        if (!spinningAllowed)
+        if (!spinningAllowed && !FrontCamera.WaitResult)
         {
             Debug.Log("camera opened");
             SceneManager.LoadScene("FrontCamera");
         }
         else
         {
-            Debug.Log("spin wheel first");
+            Debug.Log("Spin wheel first !!!");
         }
+    }
+
+    public void CheckOutAct()
+    {
+        Debug.Log("Prediction:" + FrontCamera.prediction);
+        Debug.Log("Feeling From Wheel:" + FeelingFromWheel);
+        if (FrontCamera.prediction == FeelingFromWheel)
+        {
+            BarController.progress++;
+            Debug.Log("BRAVOOOOOOOOOOOOOOOO"); //POPUP notification
+            FrontCamera.WaitResult = false;
+        }
+        else
+        {
+            Debug.Log("Try Again"); //POPUP notification
+        }
+        FrontCamera.WaitResult = false;
+        Start();
     }
 }
