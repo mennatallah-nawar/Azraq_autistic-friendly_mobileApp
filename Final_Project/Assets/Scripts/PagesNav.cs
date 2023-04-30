@@ -63,6 +63,11 @@ public class PagesNav : MonoBehaviour
         SceneManager.LoadScene("Login");
     }
 
+    public void OpenSignup()
+    {
+        SceneManager.LoadScene("Signup");
+    }
+
     public void OpenStart()
     {
         SceneManager.LoadScene("Start");
