@@ -103,40 +103,38 @@ public class BackCamera : MonoBehaviour
         using (UnityWebRequest request = UnityWebRequest.Post(UploadImage_URL, form))
         {
             yield return request.SendWebRequest();
-            //Debug.Log(request.responseCode);
-
-            if (request.result == UnityWebRequest.Result.ProtocolError)
-            {
-                Debug.Log(request.result);
-                Debug.Log("Protocol Error");
-                Debug.Log(request.error);
-                Debug.Log("Error Code" + request.responseCode);
-            }
-
-            if (request.result == UnityWebRequest.Result.DataProcessingError)
-            {
-                Debug.Log(request.result);
-                Debug.Log("DataProcessingError");
-                Debug.Log(request.error);
-                Debug.Log("Error Code" + request.responseCode);
-            }
-
-            if (request.result == UnityWebRequest.Result.ConnectionError)
-            {
-                Debug.Log(request.result);
-                Debug.Log(request.error);
-                Debug.Log("ConnectionError");
-                Debug.Log("Error Code" + request.responseCode);
-            }
-
             if (request.responseCode == 200)
             {
-                //Debug.Log("Done");
-                Debug.Log("Response:" + request.downloadHandler.text);
+                Debug.Log("Request Sent");
+                //Debug.Log("Response:" + request.downloadHandler.text);
 
                 JsonObject = JsonUtility.FromJson<JSONReader>(request.downloadHandler.text);
                 BackCamPrediction = JsonObject.prediction;
             }
+
+            if (request.result != UnityWebRequest.Result.Success)
+            {
+                Debug.Log(request.result);
+                Debug.Log("Error Code" + request.responseCode);
+            }
+
+            // if (request.result == UnityWebRequest.Result.ProtocolError)
+            // {
+            //     Debug.Log(request.result);
+            //     Debug.Log("Error Code" + request.responseCode);
+            // }
+
+            // if (request.result == UnityWebRequest.Result.DataProcessingError)
+            // {
+            //     Debug.Log(request.result);
+            //     Debug.Log("Error Code" + request.responseCode);
+            // }
+
+            // if (request.result == UnityWebRequest.Result.ConnectionError)
+            // {
+            //     Debug.Log(request.result);
+            //     Debug.Log("Error Code" + request.responseCode);
+            // }
         }
 
         Back(); //POPUP notification in home page with feeling

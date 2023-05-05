@@ -1,8 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 using System.IO;
 using UnityEngine.SceneManagement;
 
@@ -15,6 +12,11 @@ public class Wheel : MonoBehaviour
     private int finalAngle;
 
     public static string FeelingFromWheel;
+
+    public GameObject BravooPanel ;
+    public GameObject TryAgainPanel ;
+
+
     //private string feeling;
 
 
@@ -86,7 +88,7 @@ public class Wheel : MonoBehaviour
                 FeelingFromWheel = "Disgust";
                 break;
         }
-        Debug.Log(FeelingFromWheel);
+        Debug.Log("Feeling From Wheel:" + FeelingFromWheel);
         //WriteString();
         //spinningAllowed = true;
     }
@@ -118,21 +120,30 @@ public class Wheel : MonoBehaviour
         }
     }
 
+    void CloseNotifications()
+    {
+        TryAgainPanel.SetActive(false);
+        BravooPanel.SetActive(false);
+    }
+
     public void CheckOutAct()
     {
         Debug.Log("Prediction:" + FrontCamera.prediction);
-        Debug.Log("Feeling From Wheel:" + FeelingFromWheel);
+        
+        
         if (FrontCamera.prediction == FeelingFromWheel)
         {
             BarController.progress++;
-            Debug.Log("BRAVOOOOOOOOOOOOOOOO"); //POPUP notification
-            FrontCamera.WaitResult = false;
+            BravooPanel.SetActive(true);
         }
         else
         {
-            Debug.Log("Try Again"); //POPUP notification
+            TryAgainPanel.SetActive(true);
         }
+        Invoke("CloseNotifications", 5);
         FrontCamera.WaitResult = false;
         Start();
     }
+
+
 }
