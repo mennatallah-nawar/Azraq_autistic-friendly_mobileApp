@@ -10,7 +10,8 @@ public class DragAndDrop2 : MonoBehaviour
     private Slot _slot;
     
     public static DragAndDrop2 itemBeingDragged;
-
+    public GameObject BravooPanel ;
+    public static float p = 0;
     public void Init(Slot slot){
         print(slot);
        // _renderer.sprite = slot.Renderer.sprite;
@@ -22,6 +23,7 @@ public class DragAndDrop2 : MonoBehaviour
         _slot1Position = new Vector2(-2.51f, 2.3f);
         _slot2Position = new Vector2(2.97f, 2.25f);
         _slot3Position = new Vector2(8.27f, 2.27f);
+        
         print("nela");
         //transform.position = GetMousePos();
         //transform.position = GetMousePos();
@@ -58,19 +60,22 @@ public class DragAndDrop2 : MonoBehaviour
             transform.position = _slotPosition;
             //_slot.Placed();
             print(_slotPosition);
-            print("bitch");
+            p++;
             _placed = true;
        }
        else if(_orginialPosition.x > -2.6 && _orginialPosition.x < 0 && _orginialPosition.y < -1.7 && transform.position.x < 8.3 && transform.position.x > 8.2 && transform.position.y > 2 ){
             transform.position = _slot3Position;
+            p++;
             _placed = true;
        }
        else if(_orginialPosition.x < 3 && _orginialPosition.y <-1.6 && transform.position.x < 3 && transform.position.x > 2.88 && transform.position.y > 2.1 && transform.position.y < 2.35 ){
             transform.position = _slot2Position;
+            p++;
             _placed = true;
        }
        else if(_orginialPosition.x > 8 && _orginialPosition.y <-1.6 && transform.position.x < -2.3 && transform.position.x > -2.7 && transform.position.y > 2 && transform.position.y < 2.4 ){
             transform.position = _slot1Position;
+            p++;
            _placed = true;
          }
        else{
@@ -78,6 +83,7 @@ public class DragAndDrop2 : MonoBehaviour
             //transform.position = GetMousePos();
             _dragging = false;
        }
+       check();
        
     }
     void OnMouseDown(){
@@ -87,5 +93,12 @@ public class DragAndDrop2 : MonoBehaviour
 
     Vector2 GetMousePos(){
         return Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    }
+    
+    public void check(){
+        if(p == 4){
+            BarController.progress++;
+            BravooPanel.SetActive(true);
+        }
     }
 }

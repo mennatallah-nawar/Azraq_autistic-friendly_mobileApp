@@ -10,6 +10,8 @@ public class TextScript : MonoBehaviour
     public SpriteRenderer _sprite2;
     //public GameObject ant;
     public GameScript image;
+    public GameObject BravooPanel ;
+    public static float c = 0;
     
     void Start()
     {
@@ -19,6 +21,7 @@ public class TextScript : MonoBehaviour
         //Sprites = GetComponent<Sprite[]>();
         _sprite1 = _sprite1.GetComponent<SpriteRenderer>();
         _sprite2 = _sprite2.GetComponent<SpriteRenderer>();
+        
         //Sprites = Resources.LoadAll<Sprite>("TextScript");
     }
 
@@ -36,6 +39,7 @@ public class TextScript : MonoBehaviour
         if(image.last.position.x < -9.9 && image.red.position.x > 9.97 && image.red.position.x < 10 && image.red.position.y > 0.04 ){
             //print(_sprite.sprite);
             _sprite.color = Color.green;
+            
            // _sprite1.color = Color.white;
            // _sprite2.color = Color.white;
             print("farah");
@@ -60,6 +64,7 @@ public class TextScript : MonoBehaviour
 
         if(image.first.position.x < -9.4 && image.first.position.x > -9.6 && image.yellow.position.x > 10){
             _sprite1.color = Color.green;
+            
             //_sprite.color = Color.white;
             //_sprite2.color = Color.white;
             print("farah");
@@ -82,6 +87,7 @@ public class TextScript : MonoBehaviour
 
         if(image.middle.position.x < -9.7 && image.blue.position.y > 0.03 && image.blue.position.y < 5){
             _sprite2.color = Color.green;
+            
            // _sprite1.color = Color.white;
            // _sprite.color = Color.white;
             print("farah");
@@ -102,8 +108,16 @@ public class TextScript : MonoBehaviour
                 //_sprite.color = Color.green;
         }
         }
-       
-       
+       if(_sprite.color == Color.green & _sprite1.color == Color.green & _sprite2.color == Color.green)
+       { c++; }
+        check();
    
+    }
+
+    public void check(){
+        if(c == 1){
+            BarController.progress++;
+            BravooPanel.SetActive(true);
+        }
     }
 }
