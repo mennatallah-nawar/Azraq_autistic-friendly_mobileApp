@@ -15,6 +15,9 @@ public class Wheel : MonoBehaviour
 
     public GameObject BravooPanel ;
     public GameObject TryAgainPanel ;
+    public GameObject SpinFirst;
+
+    public GameObject ErrorPanel;
 
 
     //private string feeling;
@@ -25,7 +28,7 @@ public class Wheel : MonoBehaviour
     // Use this for initialization
     public void Start()
     {
-        if (FrontCamera.WaitResult == true)
+        if (FrontCamera.WaitResult == true || FrontCamera.RequestError == true)
         {
             //prevent spinning wheel till show result
             spinningAllowed = false;
@@ -116,7 +119,9 @@ public class Wheel : MonoBehaviour
         }
         else
         {
-            Debug.Log("Spin wheel first !!!");
+            SpinFirst.SetActive(true);
+            Invoke("CloseNotifications", 5);
+            //Debug.Log("Spin wheel first !!!");
         }
     }
 
@@ -124,6 +129,8 @@ public class Wheel : MonoBehaviour
     {
         TryAgainPanel.SetActive(false);
         BravooPanel.SetActive(false);
+        SpinFirst.SetActive(false);
+        ErrorPanel.SetActive(false);
     }
 
     public void CheckOutAct()
@@ -140,10 +147,15 @@ public class Wheel : MonoBehaviour
         {
             TryAgainPanel.SetActive(true);
         }
+
+        if (FrontCamera.RequestError == true)
+        {
+            ErrorPanel.SetActive(true);
+        }
         Invoke("CloseNotifications", 5);
         FrontCamera.WaitResult = false;
+        FrontCamera.RequestError = false;
+        FrontCamera.prediction = null;
         Start();
     }
-
-
 }

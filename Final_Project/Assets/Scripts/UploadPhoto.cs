@@ -18,14 +18,12 @@ public class UploadPhoto : MonoBehaviour
    public void Start(){
         image.texture.wrapMode = TextureWrapMode.Clamp;
         image.texture.filterMode = FilterMode.Point;
-        image.texture.anisoLevel = 0;
-       
-        
+        image.texture.anisoLevel = 0; 
    }
     
-    public void UploadImageeee() {
-     NativeGallery.Permission permission = NativeGallery.GetImageFromGallery((path) =>
-       {
+    public void UploadImage() {
+        NativeGallery.Permission permission = NativeGallery.GetImageFromGallery((path) =>
+        {
 
             if (path != null)
             {
@@ -52,40 +50,41 @@ public class UploadPhoto : MonoBehaviour
         
     
     // Show file picker
-    
-}
+    }
     
 
 
 
     private IEnumerator SendRequest(UnityWebRequest www) 
     {
-    yield return www.SendWebRequest();
+        yield return www.SendWebRequest();
 
-    if (www.result != UnityWebRequest.Result.Success) {
-        Debug.Log("Error uploading image: " + www.error);
-    } else {
-        Debug.Log("Image uploaded successfully!");
-    }
+        if (www.result != UnityWebRequest.Result.Success) 
+        {
+            Debug.Log("Error uploading image: " + www.error);
+        }
+        else 
+        {
+            Debug.Log("Image uploaded successfully!");
+        }
     }
 
 
     IEnumerator DownloadImage(string imageUrl) 
     {
-       using (UnityWebRequest www = UnityWebRequestTexture.GetTexture(imageUrl)) {
-       yield return www.SendWebRequest();
+       using (UnityWebRequest www = UnityWebRequestTexture.GetTexture(imageUrl)) 
+       {
+            yield return www.SendWebRequest();
     
-      if (www.result == UnityWebRequest.Result.Success) {
-      Texture2D texture = DownloadHandlerTexture.GetContent(www);
-      // Display the texture in a UI image or 3D object
-      } 
-      else {
+            if (www.result == UnityWebRequest.Result.Success) 
+            {
+            Texture2D texture = DownloadHandlerTexture.GetContent(www);
+            // Display the texture in a UI image or 3D object
+            } 
+            else 
+            {
             Debug.Log("Error downloading file: " + www.error);
-        }
-      }
+            }
+       }
     }
-   
-
-    
-
 }

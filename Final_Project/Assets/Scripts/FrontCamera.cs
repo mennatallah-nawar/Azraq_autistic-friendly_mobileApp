@@ -1,11 +1,9 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
-using Newtonsoft.Json;
 
 public class FrontCamera : MonoBehaviour
 {
@@ -16,6 +14,9 @@ public class FrontCamera : MonoBehaviour
     public AspectRatioFitter fit;
 
     public static bool WaitResult = false;
+
+    public static bool RequestError = false;
+
     public static string prediction = null;
 
     [SerializeField] public JSONReader JsonObject;
@@ -68,19 +69,48 @@ public class FrontCamera : MonoBehaviour
         background.rectTransform.localEulerAngles = new Vector3(0, 0, orient);
     }
 
-
     public void TakePhoto()
     {
-        ScreenCapture.CaptureScreenshot(Application.dataPath + "/SelfiePhoto.jpg");
+
+        
+        string name = "SelfiePhoto" + System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".jpg";
+        
+        //////////////Save on PC/////////
+        
+        //First Method//
+        // Texture2D screenShot = ScreenCapture.CaptureScreenshotAsTexture();
+  
+        // Texture2D newScreenShot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+        // newScreenShot.SetPixels(screenShot.GetPixels());
+        // newScreenShot.Apply();
+
+
+        //Second Method//
+        // Texture2D photo = new Texture2D(Screen.width,Screen.height, TextureFormat.RGB24, false);
+        // photo.ReadPixels(new Rect(0, 0 , Screen.width / 2, Screen.height),0,0);
+        // photo.Apply();
+
+        // Texture2D photo = new Texture2D(frontCam.width, frontCam.height);
+        // photo.SetPixels(frontCam.GetPixels());
+        // photo.Apply();
+
+        //Encode to a JPG
+        // byte[] bytes = newScreenShot.EncodeToJPG();
+        // File.WriteAllBytes(Application.dataPath + "/SelfiePhoto.jpg", bytes);
+
+
+        // ////////////Save on android//////
+        // NativeGallery.SaveImageToGallery(newScreenShot,"Azraq App SelfiePhotos",name);
+
+        // Debug.Log("SelfiePhoto saved");
+        //Invoke("Wait", 2);
+        WaitResult = true;
+        Back();
+    }
+
+    public void Wait()
+    {
         StartCoroutine(Upload());
-        Debug.Log("SelfiePhoto saved");
-        //Texture2D photo = new Texture2D(frontCam.width, frontCam.height);
-        //photo.SetPixels(frontCam.GetPixels());
-        //photo.Apply();
-        ////Encode to a PNG
-        //byte[] bytes = photo.EncodeToPNG();
-        //string path = Application.persistentDataPath + "photo.png";
-        //File.WriteAllBytes(path, bytes);
     }
 
     public void Back()
@@ -116,6 +146,7 @@ public class FrontCamera : MonoBehaviour
 
             if (request.result != UnityWebRequest.Result.Success)
             {
+                RequestError = true;
                 Debug.Log(request.result);
                 Debug.Log("Error Code" + request.responseCode);
             }
