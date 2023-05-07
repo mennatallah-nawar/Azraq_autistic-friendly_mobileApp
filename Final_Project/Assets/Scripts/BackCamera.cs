@@ -15,11 +15,29 @@ public class BackCamera : MonoBehaviour
     public RawImage background;
     public AspectRatioFitter fit;
 
-    public static string BackCamPrediction;
+    public byte[] bytes ;
+    private string BackCamPrediction;
+
+    private bool BackCameraRequestError = false;
+
+    public GameObject HappyPanel;
+    public GameObject AngerPanel;
+
+    public GameObject SadPanel;
+
+    public GameObject SurpPanel;
+
+    public GameObject DisPanel;
+
+    public GameObject FearPanel;
+
+    public GameObject NeutralPanel;
+
+    public GameObject ErrorPanel;
 
     [SerializeField] public JSONReader JsonObject;
 
-    // Start is called before the first frame update
+
     void Start()
     {
         defaultBackground = background.texture;
@@ -51,8 +69,6 @@ public class BackCamera : MonoBehaviour
         camAvailable = true;
     }
 
-
-    //Update is called once per frame
     void Update()
     {
         if (!camAvailable)
@@ -68,19 +84,33 @@ public class BackCamera : MonoBehaviour
         background.rectTransform.localEulerAngles = new Vector3(0, 0, orient);
     }
 
-
     public void TakePhoto()
     {
-        ScreenCapture.CaptureScreenshot(Application.dataPath + "/Photo.jpg");
-        StartCoroutine(Upload());
+
+        StartCoroutine("Screenshot");
         Debug.Log("Photo saved");
-        //Texture2D photo = new Texture2D(BackCam.width, BackCam.height);
-        //photo.SetPixels(BackCam.GetPixels());
-        //photo.Apply();
-        ////Encode to a PNG
-        //byte[] bytes = photo.EncodeToPNG();
-        //string path = Application.persistentDataPath + "photo.png";
-        //File.WriteAllBytes(path, bytes);        
+        Invoke("Wait", 2);
+
+    }
+
+    private IEnumerator Screenshot()
+    {
+                                    
+        yield return new WaitForEndOfFrame();
+
+        Texture2D screenShot = ScreenCapture.CaptureScreenshotAsTexture();
+        
+        //Save on PC
+        //Encode to a JPG
+        bytes  = screenShot.EncodeToJPG();
+        File.WriteAllBytes(Application.dataPath + "/Photo.jpg", bytes);
+
+        //Destroy(screenShot);
+    }
+
+    public void Wait()
+    {
+        StartCoroutine("Upload");
     }
 
     public void Back()
@@ -92,12 +122,62 @@ public class BackCamera : MonoBehaviour
         SceneManager.LoadScene("Home");
     }
 
-    IEnumerator Upload()
+    public void OpenNotification()
     {
-        string UploadImage_URL = "https://fersystem-lfoazpk3ca-lm.a.run.app/predict";
+        BackCam.Stop();
+        if (BackCameraRequestError == true)
+        {
+            ErrorPanel.SetActive(true);
+        }
+        if (BackCamPrediction == "Happy")
+        {
+            HappyPanel.SetActive(true);
+        }
+
+        if (BackCamPrediction == "Sad")
+        {
+            SadPanel.SetActive(true);
+        }
+
+        if (BackCamPrediction == "Angry")
+        {
+            AngerPanel.SetActive(true);
+        }
+
+        if (BackCamPrediction == "Fear")
+        {
+            FearPanel.SetActive(true);
+        }
+
+        if (BackCamPrediction == "Surprise")
+        {
+            SurpPanel.SetActive(true);
+        }
+
+        if (BackCamPrediction == "Disgust")
+        {
+            DisPanel.SetActive(true);
+        }
+
+        if (BackCamPrediction == "Contempt")
+        {
+            AngerPanel.SetActive(true);
+        }
+
+        if (BackCamPrediction == "Neutral")
+        {
+            HappyPanel.SetActive(true);
+        }
+
+        Invoke("Back",5);
+    }
+
+    private IEnumerator Upload()
+    {
+        string UploadImage_URL = "https://test-lfoazpk3ca-uc.a.run.app/predict";
         WWWForm form = new WWWForm();
 
-        form.AddBinaryData("file", File.ReadAllBytes(Application.dataPath + "/Photo.jpg"));
+        form.AddBinaryData("file", bytes);
         //form.AddField("UserID", "1");
 
         using (UnityWebRequest request = UnityWebRequest.Post(UploadImage_URL, form))
@@ -114,6 +194,7 @@ public class BackCamera : MonoBehaviour
 
             if (request.result != UnityWebRequest.Result.Success)
             {
+                BackCameraRequestError = true;
                 Debug.Log(request.result);
                 Debug.Log("Error Code" + request.responseCode);
             }
@@ -137,6 +218,6 @@ public class BackCamera : MonoBehaviour
             // }
         }
 
-        Back(); //POPUP notification in home page with feeling
+        OpenNotification();
     }
 }

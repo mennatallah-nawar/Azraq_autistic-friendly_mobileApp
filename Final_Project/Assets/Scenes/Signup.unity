@@ -251,7 +251,7 @@ GameObject:
   - component: {fileID: 148564423}
   - component: {fileID: 148564422}
   m_Layer: 5
-  m_Name: InputField Fname
+  m_Name: InputFieldFname
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -565,6 +565,7 @@ GameObject:
   - component: {fileID: 184476713}
   - component: {fileID: 184476714}
   - component: {fileID: 184476715}
+  - component: {fileID: 184476716}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -612,6 +613,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   image: {fileID: 1692815366}
+--- !u!114 &184476716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 184476712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5068da05de7a1e419571707b3d85db7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &207210265
 GameObject:
   m_ObjectHideFlags: 0
@@ -919,7 +932,7 @@ GameObject:
   - component: {fileID: 521974603}
   - component: {fileID: 521974602}
   m_Layer: 5
-  m_Name: InputField Lname
+  m_Name: InputFieldLname
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2650,7 +2663,7 @@ GameObject:
   - component: {fileID: 1443279247}
   - component: {fileID: 1443279246}
   m_Layer: 5
-  m_Name: InputField Username
+  m_Name: InputFieldUsername
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3508,7 +3521,7 @@ GameObject:
   - component: {fileID: 1711643955}
   - component: {fileID: 1711643954}
   m_Layer: 5
-  m_Name: InputField Age
+  m_Name: InputFieldAge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3966,7 +3979,7 @@ GameObject:
   - component: {fileID: 1965444899}
   - component: {fileID: 1965444898}
   m_Layer: 5
-  m_Name: InputField password
+  m_Name: InputFieldpassword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

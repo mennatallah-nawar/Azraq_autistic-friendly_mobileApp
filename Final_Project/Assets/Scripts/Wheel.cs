@@ -25,7 +25,6 @@ public class Wheel : MonoBehaviour
 
     //public TMP_Text feelingText;
 
-    // Use this for initialization
     public void Start()
     {
         if (FrontCamera.WaitResult == true || FrontCamera.RequestError == true)
@@ -143,15 +142,15 @@ public class Wheel : MonoBehaviour
             BarController.progress++;
             BravooPanel.SetActive(true);
         }
+        else if (FrontCamera.RequestError == true)
+        {
+            ErrorPanel.SetActive(true);
+        }
         else
         {
             TryAgainPanel.SetActive(true);
         }
 
-        if (FrontCamera.RequestError == true)
-        {
-            ErrorPanel.SetActive(true);
-        }
         Invoke("CloseNotifications", 5);
         FrontCamera.WaitResult = false;
         FrontCamera.RequestError = false;

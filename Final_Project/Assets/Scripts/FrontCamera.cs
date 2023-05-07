@@ -19,6 +19,8 @@ public class FrontCamera : MonoBehaviour
 
     public static string prediction = null;
 
+    public byte[] bytes ;
+
     [SerializeField] public JSONReader JsonObject;
 
     void Start()
@@ -72,45 +74,30 @@ public class FrontCamera : MonoBehaviour
     public void TakePhoto()
     {
 
+        StartCoroutine("Screenshot");
+        Debug.Log("SelfiePhoto saved");
+        Invoke("Wait", 2);
+
+    }
+
+    private IEnumerator Screenshot()
+    {
+                                    
+        yield return new WaitForEndOfFrame();
+
+        Texture2D screenShot = ScreenCapture.CaptureScreenshotAsTexture();
         
-        string name = "SelfiePhoto" + System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".jpg";
-        
-        //////////////Save on PC/////////
-        
-        //First Method//
-        // Texture2D screenShot = ScreenCapture.CaptureScreenshotAsTexture();
-  
-        // Texture2D newScreenShot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
-        // newScreenShot.SetPixels(screenShot.GetPixels());
-        // newScreenShot.Apply();
-
-
-        //Second Method//
-        // Texture2D photo = new Texture2D(Screen.width,Screen.height, TextureFormat.RGB24, false);
-        // photo.ReadPixels(new Rect(0, 0 , Screen.width / 2, Screen.height),0,0);
-        // photo.Apply();
-
-        // Texture2D photo = new Texture2D(frontCam.width, frontCam.height);
-        // photo.SetPixels(frontCam.GetPixels());
-        // photo.Apply();
-
+        //Save on PC
         //Encode to a JPG
-        // byte[] bytes = newScreenShot.EncodeToJPG();
-        // File.WriteAllBytes(Application.dataPath + "/SelfiePhoto.jpg", bytes);
+        bytes  = screenShot.EncodeToJPG();
+        File.WriteAllBytes(Application.dataPath + "/SelfiePhoto.jpg", bytes);
 
-
-        // ////////////Save on android//////
-        // NativeGallery.SaveImageToGallery(newScreenShot,"Azraq App SelfiePhotos",name);
-
-        // Debug.Log("SelfiePhoto saved");
-        //Invoke("Wait", 2);
-        WaitResult = true;
-        Back();
+        //Destroy(screenShot);
     }
 
     public void Wait()
     {
-        StartCoroutine(Upload());
+        StartCoroutine("Upload");
     }
 
     public void Back()
@@ -122,12 +109,12 @@ public class FrontCamera : MonoBehaviour
         SceneManager.LoadScene("Wheel");
     }
 
-    IEnumerator Upload()
+    private IEnumerator Upload()
     {
-        string UploadImage_URL = "https://fersystem-lfoazpk3ca-lm.a.run.app/predict";
+        string UploadImage_URL = "https://test-lfoazpk3ca-uc.a.run.app/predict";
         WWWForm form = new WWWForm();
 
-        form.AddBinaryData("file", File.ReadAllBytes(Application.dataPath + "/SelfiePhoto.jpg"));
+        form.AddBinaryData("file", bytes);
         //form.AddField("UserID", "1");
 
         using (UnityWebRequest request = UnityWebRequest.Post(UploadImage_URL, form))
