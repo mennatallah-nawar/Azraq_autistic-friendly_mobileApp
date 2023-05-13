@@ -13,6 +13,8 @@ public class FrontCamera : MonoBehaviour
     public RawImage background;
     public AspectRatioFitter fit;
 
+    public GameObject CaptureButton;
+
     public static bool WaitResult = false;
 
     public static bool RequestError = false;
@@ -76,23 +78,28 @@ public class FrontCamera : MonoBehaviour
 
         StartCoroutine("Screenshot");
         Debug.Log("SelfiePhoto saved");
+        if (frontCam != null)
+        {
+            frontCam.Stop();
+            background.enabled = false;
+            CaptureButton.SetActive(false);
+        }
         Invoke("Wait", 2);
 
     }
 
     private IEnumerator Screenshot()
-    {
-                                    
+    {                            
         yield return new WaitForEndOfFrame();
 
         Texture2D screenShot = ScreenCapture.CaptureScreenshotAsTexture();
         
-        //Save on PC
         //Encode to a JPG
         bytes  = screenShot.EncodeToJPG();
+        //Save on PC
         File.WriteAllBytes(Application.dataPath + "/SelfiePhoto.jpg", bytes);
 
-        //Destroy(screenShot);
+        Destroy(screenShot);
     }
 
     public void Wait()
@@ -111,7 +118,7 @@ public class FrontCamera : MonoBehaviour
 
     private IEnumerator Upload()
     {
-        string UploadImage_URL = "https://test-lfoazpk3ca-uc.a.run.app/predict";
+        string UploadImage_URL = "https://blu-lfoazpk3ca-uc.a.run.app/predict";
         WWWForm form = new WWWForm();
 
         form.AddBinaryData("file", bytes);

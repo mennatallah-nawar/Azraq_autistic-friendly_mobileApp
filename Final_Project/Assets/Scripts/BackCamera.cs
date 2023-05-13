@@ -15,6 +15,8 @@ public class BackCamera : MonoBehaviour
     public RawImage background;
     public AspectRatioFitter fit;
 
+    public GameObject CaptureButton;
+
     public byte[] bytes ;
     private string BackCamPrediction;
 
@@ -31,7 +33,7 @@ public class BackCamera : MonoBehaviour
 
     public GameObject FearPanel;
 
-    public GameObject NeutralPanel;
+    //public GameObject NeutralPanel;
 
     public GameObject ErrorPanel;
 
@@ -89,6 +91,12 @@ public class BackCamera : MonoBehaviour
 
         StartCoroutine("Screenshot");
         Debug.Log("Photo saved");
+        if (BackCam != null)
+        {
+            BackCam.Stop();
+            background.enabled = false;
+            CaptureButton.SetActive(false);
+        }
         Invoke("Wait", 2);
 
     }
@@ -100,12 +108,13 @@ public class BackCamera : MonoBehaviour
 
         Texture2D screenShot = ScreenCapture.CaptureScreenshotAsTexture();
         
-        //Save on PC
         //Encode to a JPG
         bytes  = screenShot.EncodeToJPG();
+
+        //Save on PC
         File.WriteAllBytes(Application.dataPath + "/Photo.jpg", bytes);
 
-        //Destroy(screenShot);
+        Destroy(screenShot);
     }
 
     public void Wait()
@@ -174,7 +183,7 @@ public class BackCamera : MonoBehaviour
 
     private IEnumerator Upload()
     {
-        string UploadImage_URL = "https://test-lfoazpk3ca-uc.a.run.app/predict";
+        string UploadImage_URL = "https://blu-lfoazpk3ca-uc.a.run.app/predict";
         WWWForm form = new WWWForm();
 
         form.AddBinaryData("file", bytes);
