@@ -16,10 +16,15 @@ public class UploadPhoto : MonoBehaviour
     string UploadImage_URL;
     [SerializeField] public JSONReader JsonObject;
     public static string Image_Url = null;
+    public static bool flag = false;
+
 
     
   void Start()
   { 
+        if(flag == true){
+            StartCoroutine(DownloadImage(Image_Url));
+        }
         
   }
     
@@ -143,6 +148,7 @@ IEnumerator Upload(string path)
                 Image_Url = JsonObject.Image_Url;
                 Debug.Log(request.downloadHandler.text);
                 Debug.Log(Image_Url);
+                flag = true;
                 StartCoroutine(DownloadImage(Image_Url));
                 
             }
@@ -160,7 +166,7 @@ IEnumerator Upload(string path)
     }
  
 
-    IEnumerator DownloadImage(string imageUrl) 
+   public IEnumerator DownloadImage(string imageUrl) 
     {
     
 
