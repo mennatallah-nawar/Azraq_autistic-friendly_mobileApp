@@ -22,50 +22,52 @@ public class Login : MonoBehaviour
     //GameObject gameObject = new GameObject(); 
     //PagesNav myScript = gameObject.AddComponent<PagesNav>();
     //public GameObject GameObject;
-    void Start () {
-       
+    void Start()
+    {
+
     }
     public void usernamee(string s)
     {
         username1 = s;
-        
-     
+
+
     }
-   
-   public void passwordd(string s)
+
+    public void passwordd(string s)
     {
         password1 = s;
-        
-      
+
+
     }
 
     public void OpenHome()
     {
         SceneManager.LoadScene("Home");
     }
-    
-    IEnumerator multiple(){
+
+    IEnumerator multiple()
+    {
         StartCoroutine(LoginRequest(username1, password1));
         yield return new WaitForSeconds(2);
         OpenHome();
-        
+
     }
 
     public void OnLoginButtonClick()
     {
-        
+
         print("yala");
         StartCoroutine(LoginRequest(username1, password1));
         //StartCoroutine(multiple());
-        
+
     }
-   
+
 
 
     IEnumerator LoginRequest(string username1, string password1)
     {
         string url = "https://blu-lfoazpk3ca-uc.a.run.app/login";
-        
+
 
         UnityWebRequest request = new UnityWebRequest(url, "POST");
         string loginJson = "{\"username\":\"" + username1 + "\",\"password\":\"" + password1 + "\"}";
@@ -78,26 +80,27 @@ public class Login : MonoBehaviour
 
         if (request.result == UnityWebRequest.Result.Success)
         {
-          string responseBody = request.downloadHandler.text;
-          print(responseBody.Length);
-          if(responseBody.Length == 83)
-          {
-            WrongPasswordPanel.SetActive(true);
-          }
-          else if(responseBody.Length == 88)
-          {
-            NoUserPanel.SetActive(true);
-          }
-          else{
-          JsonObject = JsonUtility.FromJson<JSONReader>(responseBody);
-          token = JsonObject.token;
-          Debug.Log(loginJson);
-          print(request.GetResponseHeader("Content-Length"));
-          //print(loginJson);
-          Debug.Log(JsonObject.token);
-           yield return new WaitForSeconds(2);
-           OpenHome();
-          }
+            string responseBody = request.downloadHandler.text;
+            print(responseBody.Length);
+            if (responseBody.Length == 83)
+            {
+                WrongPasswordPanel.SetActive(true);
+            }
+            else if (responseBody.Length == 88)
+            {
+                NoUserPanel.SetActive(true);
+            }
+            else
+            {
+                JsonObject = JsonUtility.FromJson<JSONReader>(responseBody);
+                token = JsonObject.token;
+                Debug.Log(loginJson);
+                print(request.GetResponseHeader("Content-Length"));
+                //print(loginJson);
+                Debug.Log(JsonObject.token);
+                yield return new WaitForSeconds(2);
+                OpenHome();
+            }
         }
         else
         {
@@ -105,13 +108,13 @@ public class Login : MonoBehaviour
             // JsonObject = JsonUtility.FromJson<JSONReader>(responseBody);
             // error = JsonObject.WWWAuthenticate;
             // print(responseBody);
-          
-          //print(loginJson);
+
+            //print(loginJson);
             //Debug.LogError(request.error);
         }
         request.Dispose();
     }
 
-   
-    
+
+
 }

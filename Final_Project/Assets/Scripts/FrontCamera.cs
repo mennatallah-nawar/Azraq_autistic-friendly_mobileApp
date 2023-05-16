@@ -21,7 +21,7 @@ public class FrontCamera : MonoBehaviour
 
     public static string prediction = null;
 
-    public byte[] bytes ;
+    public byte[] bytes;
 
     [SerializeField] public JSONReader JsonObject;
 
@@ -89,13 +89,13 @@ public class FrontCamera : MonoBehaviour
     }
 
     private IEnumerator Screenshot()
-    {                            
+    {
         yield return new WaitForEndOfFrame();
 
         Texture2D screenShot = ScreenCapture.CaptureScreenshotAsTexture();
-        
+
         //Encode to a JPG
-        bytes  = screenShot.EncodeToJPG();
+        bytes = screenShot.EncodeToJPG();
         //Save on PC
         File.WriteAllBytes(Application.dataPath + "/SelfiePhoto.jpg", bytes);
 
@@ -126,6 +126,7 @@ public class FrontCamera : MonoBehaviour
 
         using (UnityWebRequest request = UnityWebRequest.Post(UploadImage_URL, form))
         {
+            request.SetRequestHeader("x-access-token", Login.token);
             yield return request.SendWebRequest();
 
             if (request.responseCode == 200)
@@ -133,7 +134,7 @@ public class FrontCamera : MonoBehaviour
                 Debug.Log("Request Sent");
                 WaitResult = true;
                 //Debug.Log("Response:" + request.downloadHandler.text);
- 
+
                 JsonObject = JsonUtility.FromJson<JSONReader>(request.downloadHandler.text);
                 prediction = JsonObject.prediction;
             }

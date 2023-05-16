@@ -17,7 +17,7 @@ public class BackCamera : MonoBehaviour
 
     public GameObject CaptureButton;
 
-    public byte[] bytes ;
+    public byte[] bytes;
     private string BackCamPrediction;
 
     private bool BackCameraRequestError = false;
@@ -103,13 +103,13 @@ public class BackCamera : MonoBehaviour
 
     private IEnumerator Screenshot()
     {
-                                    
+
         yield return new WaitForEndOfFrame();
 
         Texture2D screenShot = ScreenCapture.CaptureScreenshotAsTexture();
-        
+
         //Encode to a JPG
-        bytes  = screenShot.EncodeToJPG();
+        bytes = screenShot.EncodeToJPG();
 
         //Save on PC
         File.WriteAllBytes(Application.dataPath + "/Photo.jpg", bytes);
@@ -178,7 +178,7 @@ public class BackCamera : MonoBehaviour
             HappyPanel.SetActive(true);
         }
 
-        Invoke("Back",5);
+        Invoke("Back", 5);
     }
 
     private IEnumerator Upload()
@@ -191,6 +191,7 @@ public class BackCamera : MonoBehaviour
 
         using (UnityWebRequest request = UnityWebRequest.Post(UploadImage_URL, form))
         {
+            request.SetRequestHeader("x-access-token", Login.token);
             yield return request.SendWebRequest();
             if (request.responseCode == 200)
             {
