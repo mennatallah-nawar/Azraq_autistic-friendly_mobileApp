@@ -44,4 +44,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/ConnectedDevices.unity
     guid: c5bfc0bdce0897347b1e779ad834b910
+  - enabled: 1
+    path: Assets/Scenes/Game4.unity
+    guid: 83847112625946244bdbd6b057609710
   m_configObjects: {}

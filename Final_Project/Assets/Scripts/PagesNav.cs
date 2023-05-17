@@ -48,6 +48,11 @@ public class PagesNav : MonoBehaviour
         SceneManager.LoadScene("Game3");
     }
 
+    public void OpenGame4()
+    {
+        SceneManager.LoadScene("Game4");
+    }
+
     public void OpenHomePage()
     {
         SceneManager.LoadScene("Home");
