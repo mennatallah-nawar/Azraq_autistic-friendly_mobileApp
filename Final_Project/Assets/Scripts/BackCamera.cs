@@ -91,13 +91,7 @@ public class BackCamera : MonoBehaviour
 
         StartCoroutine("Screenshot");
         Debug.Log("Photo saved");
-        if (BackCam != null)
-        {
-            BackCam.Stop();
-            background.enabled = false;
-            CaptureButton.SetActive(false);
-        }
-        Invoke("Wait", 2);
+        Invoke("Wait", 3);
 
     }
 
@@ -119,6 +113,12 @@ public class BackCamera : MonoBehaviour
 
     public void Wait()
     {
+        if (BackCam != null)
+        {
+            BackCam.Stop();
+            background.enabled = false;
+            CaptureButton.SetActive(false);
+        }
         StartCoroutine("Upload");
     }
 

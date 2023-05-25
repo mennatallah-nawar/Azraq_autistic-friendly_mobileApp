@@ -75,17 +75,10 @@ public class FrontCamera : MonoBehaviour
 
     public void TakePhoto()
     {
-
         StartCoroutine("Screenshot");
         Debug.Log("SelfiePhoto saved");
-        if (frontCam != null)
-        {
-            frontCam.Stop();
-            background.enabled = false;
-            CaptureButton.SetActive(false);
-        }
-        Invoke("Wait", 2);
 
+        Invoke("Wait", 3);
     }
 
     private IEnumerator Screenshot()
@@ -104,6 +97,12 @@ public class FrontCamera : MonoBehaviour
 
     public void Wait()
     {
+        if (frontCam != null)
+        {
+            frontCam.Stop();
+            background.enabled = false;
+            CaptureButton.SetActive(false);
+        }
         StartCoroutine("Upload");
     }
 
