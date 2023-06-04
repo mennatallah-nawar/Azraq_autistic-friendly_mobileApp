@@ -117,7 +117,7 @@ public class FrontCamera : MonoBehaviour
 
     private IEnumerator Upload()
     {
-        string UploadImage_URL = "https://blu-lfoazpk3ca-uc.a.run.app/predict";
+        string UploadImage_URL = "https://azraq-ermoszz3qq-uc.a.run.app/predict";
         WWWForm form = new WWWForm();
 
         form.AddBinaryData("file", bytes);

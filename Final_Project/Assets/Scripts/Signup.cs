@@ -87,7 +87,7 @@ public class Signup : MonoBehaviour
 
     IEnumerator SignupRequest(string username, string firstname, string lastname, int age, string password)
     {
-        string url = "https://blu-lfoazpk3ca-uc.a.run.app/signup";
+        string url = "https://azraq-ermoszz3qq-uc.a.run.app/signup";
         print(age);
 
         UnityWebRequest request = new UnityWebRequest(url, "POST");

@@ -58,6 +58,7 @@ public class Login : MonoBehaviour
 
         print("yala");
         StartCoroutine(LoginRequest(username1, password1));
+        print("zeft");
         //StartCoroutine(multiple());
 
     }
@@ -66,7 +67,7 @@ public class Login : MonoBehaviour
 
     IEnumerator LoginRequest(string username1, string password1)
     {
-        string url = "https://blu-lfoazpk3ca-uc.a.run.app/login";
+        string url = "https://azraq-ermoszz3qq-uc.a.run.app/login";
 
 
         UnityWebRequest request = new UnityWebRequest(url, "POST");

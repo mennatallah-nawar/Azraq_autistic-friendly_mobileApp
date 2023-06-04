@@ -53,7 +53,7 @@ public class UploadPhoto : MonoBehaviour
     }
     IEnumerator Upload1(string path)
     {
-        UploadImage_URL = "https://blu-lfoazpk3ca-uc.a.run.app/postImage";
+        UploadImage_URL = "https://azraq-ermoszz3qq-uc.a.run.app/postImage";
         //UnityWebRequest request = new UnityWebRequest(UploadImage_URL, "POST");
 
         WWWForm form = new WWWForm();
@@ -128,7 +128,7 @@ public class UploadPhoto : MonoBehaviour
 
     IEnumerator Upload(string path)
     {
-        UploadImage_URL = "https://blu-lfoazpk3ca-uc.a.run.app/postImage";
+        UploadImage_URL = "https://azraq-ermoszz3qq-uc.a.run.app/postImage";
         WWWForm form = new WWWForm();
 
 
@@ -172,7 +172,7 @@ public class UploadPhoto : MonoBehaviour
     {
 
 
-        string i = "https://blu-lfoazpk3ca-uc.a.run.app";
+        string i = "https://azraq-ermoszz3qq-uc.a.run.app";
         using (UnityWebRequest request = UnityWebRequest.Get(i + imageUrl))
         {
             request.SetRequestHeader("x-access-token", Login.token);
