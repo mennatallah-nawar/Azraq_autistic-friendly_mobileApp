@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//using UnityEngine.InputSystem;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using System.Text;
@@ -19,15 +18,23 @@ public class Signup : MonoBehaviour
     public static string password = null;
     [SerializeField] public JSONReader JsonObject;
     public static string token = null;
-    public GameObject TryAgainPanel;
-    public GameObject UserNamePanel;
-    public GameObject PasswordPanel;
-    public GameObject DataPanel;
+    public GameObject UserExist;
+    public GameObject UserNameShort;
+    public GameObject PasswordShort;
+    public GameObject FillInputs;
+
+    public GameObject UserNameCond;
 
     public GameObject showPass;
 
     public GameObject hidePass;
+
+    public TMP_InputField UserInputField;
     public TMP_InputField PassInputField;
+    public TMP_InputField FNInputField;
+
+    public TMP_InputField LNInputField;
+    public TMP_InputField AgeInputField;
 
     void Start()
     {
@@ -64,29 +71,51 @@ public class Signup : MonoBehaviour
     {
         SceneManager.LoadScene("Login");
     }
+
+    public void EditFields()
+    {
+        FillInputs.SetActive(false);
+    }
+
+    public void EditUserName()
+    {
+        UserNameShort.SetActive(false);
+        UserNameCond.SetActive(false);
+    }
+
+    public void EditPassword()
+    {
+        PasswordShort.SetActive(false);
+    }
+
+    public void EditPasswordORUserName()
+    {
+        UserExist.SetActive(false);
+    }
+
     public void OnLoginButtonClick()
     {
-        
-        if (username == null | firstname == null | lastname == null | password == null)
+
+        if (string.IsNullOrEmpty(UserInputField.text) || string.IsNullOrEmpty(FNInputField.text) || string.IsNullOrEmpty(LNInputField.text) ||
+        string.IsNullOrEmpty(AgeInputField.text) || string.IsNullOrEmpty(PassInputField.text))
         {
-            
-            DataPanel.SetActive(true);
-        }
-        else if (username.Length < 3)
-        {
-            
-            UserNamePanel.SetActive(true);
-        }
-        else if (password.Length < 6)
-        {
-            
-            PasswordPanel.SetActive(true);
+            //print("There are Empty field");
+            FillInputs.SetActive(true);
         }
         else
         {
-            StartCoroutine(SignupRequest(username, firstname, lastname, age, password));
-            //Debug.Log(age);
-            OpenLoginpage();
+            if(!string.IsNullOrEmpty(UserInputField.text) && username.Length > 3 && !string.IsNullOrEmpty(PassInputField.text) && password.Length > 6)
+            {
+                StartCoroutine(SignupRequest(username, firstname, lastname, age, password));
+            }
+        }
+        if (!string.IsNullOrEmpty(UserInputField.text) && username.Length < 3)
+        {
+            UserNameShort.SetActive(true);
+        }
+        if (!string.IsNullOrEmpty(PassInputField.text) && password.Length < 6)
+        {
+            PasswordShort.SetActive(true);
         }
     }
 
@@ -108,37 +137,36 @@ public class Signup : MonoBehaviour
     IEnumerator SignupRequest(string username, string firstname, string lastname, string age, string password)
     {
         string url = "https://azraq-ermoszz3qq-uc.a.run.app/signup";
-        print(age);
-
-        UnityWebRequest request = new UnityWebRequest(url, "POST");
         string loginJson = "{\"username\":\"" + username + "\",\"firstname\":\"" + firstname + "\" ,\"lastname\":\"" + lastname + "\" ,\"age\":\"" + age + "\" ,\"password\":\"" + password + "\"}";
         byte[] bodyRaw = Encoding.UTF8.GetBytes(loginJson);
-        request.uploadHandler = (UploadHandler)new UploadHandlerRaw(bodyRaw);
-        request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
-        request.SetRequestHeader("Content-Type", "application/json");
 
-        print(loginJson);
-        yield return request.SendWebRequest();
-
-        if (request.result == UnityWebRequest.Result.Success)
+        using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
         {
-            string responseBody = request.downloadHandler.text;
+            request.uploadHandler = (UploadHandler)new UploadHandlerRaw(bodyRaw);
+            request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
+            yield return request.SendWebRequest();
 
-            Debug.Log(loginJson);
+            print(request.responseCode);
+            if (request.responseCode == 201)
+            {
+                string responseBody = request.downloadHandler.text;
+                Debug.Log(loginJson);
+                OpenLoginpage();
 
+            }
 
+            else if (request.responseCode == 400)
+            {
+                UserExist.SetActive(true);
+            }
+
+            // else if (request.responseCode == 401)
+            // {
+            //     UserNameCond.SetActive(true);
+            // }
+            request.Dispose();
         }
-        else
-        {
-            //Debug.LogError(request.error);
-            show();
-        }
-        request.Dispose();
-    }
-
-    void show()
-    {
-        TryAgainPanel.SetActive(true);
     }
 
 }
