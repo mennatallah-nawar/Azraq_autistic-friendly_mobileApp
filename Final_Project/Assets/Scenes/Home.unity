@@ -734,6 +734,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 416f04bcda82aea42ac12c893c68b56f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OpenConv: 0
 --- !u!114 &371956574
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1546,7 +1547,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -17.500004, y: -40}
+  m_AnchoredPosition: {x: -17.5, y: -40}
   m_SizeDelta: {x: -50, y: -80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &711886185
@@ -1778,7 +1779,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 371956573}
         m_TargetAssemblyTypeName: PagesNav, Assembly-CSharp
-        m_MethodName: OpenGlassesScene
+        m_MethodName: OpenConvScene
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

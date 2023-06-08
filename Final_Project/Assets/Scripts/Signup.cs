@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using System.Text;
 using Newtonsoft.Json;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class Signup : MonoBehaviour
 {
@@ -14,7 +15,7 @@ public class Signup : MonoBehaviour
     public static string username = null;
     public static string firstname = null;
     public static string lastname = null;
-    public static int age = 0;
+    public static string age = null;
     public static string password = null;
     [SerializeField] public JSONReader JsonObject;
     public static string token = null;
@@ -22,8 +23,15 @@ public class Signup : MonoBehaviour
     public GameObject UserNamePanel;
     public GameObject PasswordPanel;
     public GameObject DataPanel;
-    
-    void Start () {
+
+    public GameObject showPass;
+
+    public GameObject hidePass;
+    public TMP_InputField PassInputField;
+
+    void Start()
+    {
+        hidePass.SetActive(true);
     }
     public void usernamee(string s)
     {
@@ -34,21 +42,21 @@ public class Signup : MonoBehaviour
     {
         firstname = s;
     }
-   
-   public void lastnamee(string s)
+
+    public void lastnamee(string s)
     {
         lastname = s;
     }
 
-    public void agee(int s)
+    public void Enterage(string s)
     {
         age = s;
-       
+        //Debug.Log(age);
     }
 
-   public void passwordd(string s)
+    public void passwordd(string s)
     {
-        password = s; 
+        password = s;
     }
 
 
@@ -58,34 +66,46 @@ public class Signup : MonoBehaviour
     }
     public void OnLoginButtonClick()
     {
-        print("yala");
-        if(username == null | firstname == null | lastname == null | password == null)
+        
+        if (username == null | firstname == null | lastname == null | password == null)
         {
-            print("bs yala");
+            
             DataPanel.SetActive(true);
         }
-        else if(username.Length < 3){
-            print("yaa");
+        else if (username.Length < 3)
+        {
+            
             UserNamePanel.SetActive(true);
         }
-        else if(password.Length < 6){
-            print("nela");
+        else if (password.Length < 6)
+        {
+            
             PasswordPanel.SetActive(true);
         }
-        else{
-              StartCoroutine(SignupRequest(username, firstname, lastname, age, password));
-              OpenLoginpage();
+        else
+        {
+            StartCoroutine(SignupRequest(username, firstname, lastname, age, password));
+            //Debug.Log(age);
+            OpenLoginpage();
         }
     }
-   
 
+    public void ShowPassword()
+    {
+        PassInputField.contentType = TMP_InputField.ContentType.Password;
+        showPass.SetActive(false);
+        hidePass.SetActive(true);
+        PassInputField.ActivateInputField();
+    }
 
- 
-
-    
-    
-
-    IEnumerator SignupRequest(string username, string firstname, string lastname, int age, string password)
+    public void HidePassword()
+    {
+        PassInputField.contentType = TMP_InputField.ContentType.Standard;
+        hidePass.SetActive(false);
+        showPass.SetActive(true);
+        PassInputField.ActivateInputField();
+    }
+    IEnumerator SignupRequest(string username, string firstname, string lastname, string age, string password)
     {
         string url = "https://azraq-ermoszz3qq-uc.a.run.app/signup";
         print(age);
@@ -102,11 +122,11 @@ public class Signup : MonoBehaviour
 
         if (request.result == UnityWebRequest.Result.Success)
         {
-          string responseBody = request.downloadHandler.text;
-         
-          Debug.Log(loginJson);
-         
-         
+            string responseBody = request.downloadHandler.text;
+
+            Debug.Log(loginJson);
+
+
         }
         else
         {
@@ -116,9 +136,9 @@ public class Signup : MonoBehaviour
         request.Dispose();
     }
 
-   void show()
-   {
-       TryAgainPanel.SetActive(true);
-   }
-    
+    void show()
+    {
+        TryAgainPanel.SetActive(true);
+    }
+
 }

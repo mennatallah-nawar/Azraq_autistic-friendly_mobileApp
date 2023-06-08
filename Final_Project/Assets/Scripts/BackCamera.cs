@@ -18,9 +18,15 @@ public class BackCamera : MonoBehaviour
     public GameObject CaptureButton;
 
     public byte[] bytes;
+
+    public byte[] Audiobytes;
     private string BackCamPrediction;
 
     private bool BackCameraRequestError = false;
+
+    private bool startConv = false;
+
+    private bool StartRecordFlag = false;
 
     public GameObject HappyPanel;
     public GameObject AngerPanel;
@@ -33,15 +39,29 @@ public class BackCamera : MonoBehaviour
 
     public GameObject FearPanel;
 
-    //public GameObject NeutralPanel;
+    public GameObject StartConvButton;
+
+    public GameObject YouCanSay;
+
+    public GameObject relistenButton;
 
     public GameObject ErrorPanel;
+
+    public GameObject StartRec;
+
+    public GameObject StopRec;
+
+    public AudioSource FeedbackAudio;
+    
+    public AudioSource audioSource;
 
     [SerializeField] public JSONReader JsonObject;
 
 
     void Start()
     {
+        // audioSource = GetComponent<AudioSource>();
+        // FeedbackAudio = GetComponent<AudioSource>();
         defaultBackground = background.texture;
         WebCamDevice[] devices = WebCamTexture.devices;
 
@@ -134,6 +154,7 @@ public class BackCamera : MonoBehaviour
     public void OpenNotification()
     {
         BackCam.Stop();
+
         if (BackCameraRequestError == true)
         {
             ErrorPanel.SetActive(true);
@@ -178,7 +199,14 @@ public class BackCamera : MonoBehaviour
             HappyPanel.SetActive(true);
         }
 
-        Invoke("Back", 5);
+        if (PagesNav.OpenConv && !BackCameraRequestError)
+        {
+            StartConvButton.SetActive(true);
+        }
+        else
+        {
+            Invoke("Back", 5);
+        }
     }
 
     private IEnumerator Upload()
@@ -229,5 +257,109 @@ public class BackCamera : MonoBehaviour
         }
 
         OpenNotification();
+    }
+
+    public void GetAudio()
+    {
+        startConv = true;
+        StartCoroutine("GetAudioClip");
+        YouCanSay.SetActive(true);
+        StartConvButton.SetActive(false);
+    }
+
+    public void RepeatAudio()
+    {
+        if (!StartRecordFlag)
+        {
+            FeedbackAudio.Play();
+            Invoke("StartRecord",7);
+        }
+        
+    }
+    public void StartRecord()
+    {
+
+        StartRecordFlag = true;
+        FeedbackAudio.Stop();
+        audioSource.clip = Microphone.Start(null, false,10,44100);
+        
+
+        //Convert audioclip to bytes
+
+        //send audio
+        //StartCoroutine("PostAudioClip");
+    }
+
+    public void StopRecord()
+    {
+        //Stop recording
+        //Microphone.End(null);
+        //audioSource.Play();
+
+        //Convert audioclip to bytes
+
+
+        //send audio
+        //StartCoroutine("PostAudioClip");
+
+    }
+
+    IEnumerator GetAudioClip()
+    {
+        string GetAudio_URL = "https://azraq-ermoszz3qq-uc.a.run.app/audio";
+
+        if (startConv && PagesNav.OpenConv)
+        {
+            Debug.Log("all flags high");
+
+            using (UnityWebRequest GetAudioReq = UnityWebRequestMultimedia.GetAudioClip(GetAudio_URL, AudioType.WAV))
+            {
+                GetAudioReq.SetRequestHeader("x-access-token", Login.token);
+                yield return GetAudioReq.SendWebRequest();
+                Debug.Log(GetAudioReq.responseCode);
+                if (GetAudioReq.responseCode == 200)
+                {
+                    AudioClip myClip = DownloadHandlerAudioClip.GetContent(GetAudioReq);
+                    FeedbackAudio.clip = myClip;
+                    FeedbackAudio.Play();
+                    relistenButton.SetActive(true);
+                    Invoke("StartRecord",7);
+                }
+                else
+                {
+                    Debug.Log(GetAudioReq.error);
+                }
+            }
+
+        }
+    }
+
+
+    IEnumerator PostAudioClip()
+    {
+        string PostAudio_URL = "https://azraq-ermoszz3qq-uc.a.run.app/speech";
+        WWWForm formaudio = new WWWForm();
+
+        formaudio.AddBinaryData("file", Audiobytes);
+
+        using (UnityWebRequest SendAudiorequest = UnityWebRequest.Post(PostAudio_URL, formaudio))
+        {
+            Debug.Log(SendAudiorequest.responseCode);
+            SendAudiorequest.SetRequestHeader("x-access-token", Login.token);
+            yield return SendAudiorequest.SendWebRequest();
+            if (SendAudiorequest.responseCode == 200)
+            {
+                Debug.Log("Request Sent");
+                Debug.Log("Response:" + SendAudiorequest.downloadHandler.text);
+            }
+
+            if (SendAudiorequest.result != UnityWebRequest.Result.Success)
+            {
+                BackCameraRequestError = true;
+                Debug.Log(SendAudiorequest.result);
+                Debug.Log("Error Code" + SendAudiorequest.responseCode);
+            }
+        }
+
     }
 }

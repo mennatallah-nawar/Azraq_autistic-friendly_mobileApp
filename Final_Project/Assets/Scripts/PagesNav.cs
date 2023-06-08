@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class PagesNav : MonoBehaviour
 {
+    public static bool OpenConv = false;
     public void OpenGameMapScene()
     {
         SceneManager.LoadScene("GamesMenu");
@@ -13,6 +14,14 @@ public class PagesNav : MonoBehaviour
 
     public void OpenGlassesScene()
     {
+        OpenConv = false;
+        Debug.Log("camera opened");
+        SceneManager.LoadScene("BackCamera");
+    }
+
+    public void OpenConvScene()
+    {
+        OpenConv = true;
         Debug.Log("camera opened");
         SceneManager.LoadScene("BackCamera");
     }
