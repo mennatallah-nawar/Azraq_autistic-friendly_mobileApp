@@ -11,8 +11,10 @@ using Newtonsoft.Json;
 public class UploadPhoto : MonoBehaviour
 {
     string path;
-
+    public GameObject Panel;
+    Login n;
     public RawImage image;
+    public GameObject game;
     string UploadImage_URL;
     [SerializeField] public JSONReader JsonObject;
     public static string Image_Url = null;
@@ -22,6 +24,13 @@ public class UploadPhoto : MonoBehaviour
 
     void Start()
     {
+        //n = GameObject.FindGameObjectWithTag("need").GetComponent<Login>();
+        if(Login.flag1 == true){
+            
+            StartCoroutine(DownloadImage(Login.Image_Ur));
+            Panel.SetActive(true);
+        }
+        
         if (flag == true)
         {
             StartCoroutine(DownloadImage(Image_Url));
@@ -193,6 +202,7 @@ public class UploadPhoto : MonoBehaviour
                     print(request.downloadHandler.data);
                     print(texture);
                     image.texture = texture;
+                    //game.texture = texture;
 
                 }
 

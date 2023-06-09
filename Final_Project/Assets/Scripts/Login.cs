@@ -11,6 +11,7 @@ using TMPro;
 
 public class Login : MonoBehaviour
 {
+
     public static string username1 = null;
     public static string password1 = null;
     [SerializeField] public JSONReader JsonObject;
@@ -24,6 +25,9 @@ public class Login : MonoBehaviour
     public GameObject hidePass;
 
     public GameObject FillFields;
+
+    public static bool flag1 = false;
+    public static string Image_Ur = null;
 
     public TMP_InputField UserInputField;
     public TMP_InputField PassInputField;
@@ -115,7 +119,15 @@ public class Login : MonoBehaviour
                 //print(request.GetResponseHeader("Content-Length"));
                 //print(loginJson);
                 Debug.Log(JsonObject.token);
-                yield return new WaitForSeconds(2);
+                flag1 = true;
+
+                //yield return new WaitForSeconds(1);
+
+                Image_Ur = JsonObject.ImageUrl;
+                Debug.Log(request.downloadHandler.text);
+                Debug.Log(Image_Ur);
+
+                //yield return new WaitForSeconds(2);
                 OpenHome();
             }
             else if (request.responseCode == 403)

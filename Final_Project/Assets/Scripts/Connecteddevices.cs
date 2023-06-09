@@ -10,6 +10,7 @@ public class Connecteddevices : MonoBehaviour
     void Start()
     {
         if(UploadPhoto.flag == true){
+            
             u = GameObject.FindGameObjectWithTag("need").GetComponent<UploadPhoto>();
             print(UploadPhoto.Image_Url);
             StartCoroutine(u.DownloadImage(UploadPhoto.Image_Url));
