@@ -27,7 +27,8 @@ public class BackCamera : MonoBehaviour
     private bool startConv = false;
 
     private bool StartRecordFlag = false;
-
+    private AudioClip recordedClip;
+    public GameObject BravoPanel;
     public GameObject HappyPanel;
     public GameObject AngerPanel;
 
@@ -53,7 +54,13 @@ public class BackCamera : MonoBehaviour
 
     public AudioSource FeedbackAudio;
     
-    public AudioSource audioSource;
+   private AudioSource audioStart;
+    
+   public AudioClip audioClip;
+
+   private AudioSource audioStop;
+   public AudioClip audioClip1;
+      
 
     [SerializeField] public JSONReader JsonObject;
 
@@ -280,8 +287,8 @@ public class BackCamera : MonoBehaviour
     {
 
         StartRecordFlag = true;
-        FeedbackAudio.Stop();
-        audioSource.clip = Microphone.Start(null, false,10,44100);
+        StartRecordFlag = true;
+        recordedClip = Microphone.Start(null, true, 10, 44100);
         
 
         //Convert audioclip to bytes
@@ -290,18 +297,37 @@ public class BackCamera : MonoBehaviour
         //StartCoroutine("PostAudioClip");
     }
 
-    public void StopRecord()
+    public void SaveRecord()
     {
-        //Stop recording
-        //Microphone.End(null);
-        //audioSource.Play();
+        Microphone.End(null);
+        
+        // Save recorded clip as WAV file
+        SavWav.Save("recordedAudio", recordedClip);
+       
 
-        //Convert audioclip to bytes
+       
+        string filee = SavWav.filePath;
+        SavWav.filePath = SavWav.filePath.Replace("\\", "/");
+        
+        StartCoroutine(SendWavRequest(filee));
 
 
-        //send audio
-        //StartCoroutine("PostAudioClip");
+    }
+    public void Stopaudio(){
+        audioStop = GetComponent<AudioSource>();
 
+        // Set the audio clip to play
+        audioStop.clip = audioClip1;
+
+        audioStop.Play();
+    }
+    public void Startaudio(){
+        audioStart = GetComponent<AudioSource>();
+
+        // Set the audio clip to play
+        audioStart.clip = audioClip;
+
+        audioStart.Play();
     }
 
     IEnumerator GetAudioClip()
@@ -323,7 +349,14 @@ public class BackCamera : MonoBehaviour
                     FeedbackAudio.clip = myClip;
                     FeedbackAudio.Play();
                     relistenButton.SetActive(true);
-                    Invoke("StartRecord",7);
+
+                    Invoke("Startaudio",5);
+                    Invoke("StartRecord",6);
+                    Invoke("Stopaudio",10);
+                    Invoke("SaveRecord",11);
+
+
+                    
                 }
                 else
                 {
@@ -334,7 +367,50 @@ public class BackCamera : MonoBehaviour
         }
     }
 
+IEnumerator SendWavRequest(string filePath)
+{
 
+    string url = "https://azraq-ermoszz3qq-uc.a.run.app/speech";
+    // Create a new WWWForm object to hold the form data
+    WWWForm form = new WWWForm();
+
+    byte[] wavData = File.ReadAllBytes(filePath);
+
+    // Add the WAV file to the form data
+   form.AddBinaryData("file", wavData, "recordedAudio.wav", "audio/wav");
+   
+    
+    // Create a new UnityWebRequest object to send the request
+    
+    using (UnityWebRequest request = UnityWebRequest.Post(url, form))
+    {
+       
+        request.SetRequestHeader("x-access-token", Login.token);
+        yield return request.SendWebRequest();
+        
+        // Check the response status code and response data
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+        Debug.Log("WAV file sent successfully");
+        Debug.Log("Response Code: " + request.responseCode);
+        Debug.Log("Response Data: " + request.downloadHandler.text);
+        BravoPanel.SetActive(true);
+        
+       }
+       
+    else
+    {
+        Debug.LogError("Error sending WAV file: " + request.error);
+        //User.text = request.downloadHandler.text;
+        //User.text = request.downloadHandler.text;
+        //User.text = "error";
+        //User.text = form.GetBinaryData.ToString();
+    }
+    
+    };
+   
+    
+}
     IEnumerator PostAudioClip()
     {
         string PostAudio_URL = "https://azraq-ermoszz3qq-uc.a.run.app/speech";
