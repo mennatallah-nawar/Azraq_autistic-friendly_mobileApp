@@ -6,7 +6,8 @@ using System.IO;
 using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
 using Newtonsoft.Json;
-
+using System.Text;
+using TMPro;
 public class BackCamera : MonoBehaviour
 {
     private bool camAvailable;
@@ -26,9 +27,11 @@ public class BackCamera : MonoBehaviour
 
     private bool startConv = false;
 
-    private bool StartRecordFlag = false;
+    private bool RecordingFlag = false;
     private AudioClip recordedClip;
     public GameObject BravoPanel;
+
+    public GameObject TryAgainPanel;
     public GameObject HappyPanel;
     public GameObject AngerPanel;
 
@@ -48,27 +51,20 @@ public class BackCamera : MonoBehaviour
 
     public GameObject ErrorPanel;
 
-    public GameObject StartRec;
-
-    public GameObject StopRec;
-
     public AudioSource FeedbackAudio;
-    
-   private AudioSource audioStart;
-    
-   public AudioClip audioClip;
 
-   private AudioSource audioStop;
-   public AudioClip audioClip1;
-      
+    public AudioSource audioStart;
+
+    public AudioSource audioStop;
+
+    private string IncrementProgressss;
+
 
     [SerializeField] public JSONReader JsonObject;
 
 
     void Start()
     {
-        // audioSource = GetComponent<AudioSource>();
-        // FeedbackAudio = GetComponent<AudioSource>();
         defaultBackground = background.texture;
         WebCamDevice[] devices = WebCamTexture.devices;
 
@@ -158,6 +154,11 @@ public class BackCamera : MonoBehaviour
         SceneManager.LoadScene("Home");
     }
 
+    public void closepanels()
+    {
+        TryAgainPanel.SetActive(false);
+    }
+
     public void OpenNotification()
     {
         BackCam.Stop();
@@ -244,23 +245,6 @@ public class BackCamera : MonoBehaviour
                 Debug.Log("Error Code" + request.responseCode);
             }
 
-            // if (request.result == UnityWebRequest.Result.ProtocolError)
-            // {
-            //     Debug.Log(request.result);
-            //     Debug.Log("Error Code" + request.responseCode);
-            // }
-
-            // if (request.result == UnityWebRequest.Result.DataProcessingError)
-            // {
-            //     Debug.Log(request.result);
-            //     Debug.Log("Error Code" + request.responseCode);
-            // }
-
-            // if (request.result == UnityWebRequest.Result.ConnectionError)
-            // {
-            //     Debug.Log(request.result);
-            //     Debug.Log("Error Code" + request.responseCode);
-            // }
         }
 
         OpenNotification();
@@ -276,58 +260,47 @@ public class BackCamera : MonoBehaviour
 
     public void RepeatAudio()
     {
-        if (!StartRecordFlag)
+        if (!RecordingFlag)
         {
             FeedbackAudio.Play();
-            Invoke("StartRecord",7);
+            Invoke("Startaudio", 7);
+            Invoke("StartRecord", 8);
+            Invoke("Stopaudio", 13);
+            Invoke("SaveRecord", 14);
         }
-        
     }
+
+    public void Startaudio()
+    {
+        audioStart.Play();
+    }
+
     public void StartRecord()
     {
-
-        StartRecordFlag = true;
-        StartRecordFlag = true;
+        RecordingFlag = true;
+        audioStart.Stop();
         recordedClip = Microphone.Start(null, true, 10, 44100);
-        
+    }
 
-        //Convert audioclip to bytes
-
-        //send audio
-        //StartCoroutine("PostAudioClip");
+    public void Stopaudio()
+    {
+        audioStop.Play();
     }
 
     public void SaveRecord()
     {
+        //stop record
         Microphone.End(null);
-        
+        RecordingFlag = false;
+        audioStop.Stop();
         // Save recorded clip as WAV file
         SavWav.Save("recordedAudio", recordedClip);
-       
 
-       
         string filee = SavWav.filePath;
         SavWav.filePath = SavWav.filePath.Replace("\\", "/");
-        
+
         StartCoroutine(SendWavRequest(filee));
 
-
-    }
-    public void Stopaudio(){
-        audioStop = GetComponent<AudioSource>();
-
-        // Set the audio clip to play
-        audioStop.clip = audioClip1;
-
-        audioStop.Play();
-    }
-    public void Startaudio(){
-        audioStart = GetComponent<AudioSource>();
-
-        // Set the audio clip to play
-        audioStart.clip = audioClip;
-
-        audioStart.Play();
     }
 
     IEnumerator GetAudioClip()
@@ -350,13 +323,11 @@ public class BackCamera : MonoBehaviour
                     FeedbackAudio.Play();
                     relistenButton.SetActive(true);
 
-                    Invoke("Startaudio",5);
-                    Invoke("StartRecord",6);
-                    Invoke("Stopaudio",10);
-                    Invoke("SaveRecord",11);
+                    Invoke("Startaudio", 7);
+                    Invoke("StartRecord", 8);
+                    Invoke("Stopaudio", 13);
+                    Invoke("SaveRecord", 14);
 
-
-                    
                 }
                 else
                 {
@@ -367,75 +338,86 @@ public class BackCamera : MonoBehaviour
         }
     }
 
-IEnumerator SendWavRequest(string filePath)
-{
-
-    string url = "https://azraq-ermoszz3qq-uc.a.run.app/speech";
-    // Create a new WWWForm object to hold the form data
-    WWWForm form = new WWWForm();
-
-    byte[] wavData = File.ReadAllBytes(filePath);
-
-    // Add the WAV file to the form data
-   form.AddBinaryData("file", wavData, "recordedAudio.wav", "audio/wav");
-   
-    
-    // Create a new UnityWebRequest object to send the request
-    
-    using (UnityWebRequest request = UnityWebRequest.Post(url, form))
+    IEnumerator SendWavRequest(string filePath)
     {
-       
-        request.SetRequestHeader("x-access-token", Login.token);
-        yield return request.SendWebRequest();
-        
-        // Check the response status code and response data
-        if (request.result == UnityWebRequest.Result.Success)
+
+        string url = "https://azraq-ermoszz3qq-uc.a.run.app/speech";
+        // Create a new WWWForm object to hold the form data
+        WWWForm form = new WWWForm();
+
+        byte[] wavData = File.ReadAllBytes(filePath);
+
+        // Add the WAV file to the form data
+        form.AddBinaryData("file", wavData, "recordedAudio.wav", "audio/wav");
+
+        using (UnityWebRequest request = UnityWebRequest.Post(url, form))
         {
-        Debug.Log("WAV file sent successfully");
-        Debug.Log("Response Code: " + request.responseCode);
-        Debug.Log("Response Data: " + request.downloadHandler.text);
-        BravoPanel.SetActive(true);
-        
-       }
-       
-    else
-    {
-        Debug.LogError("Error sending WAV file: " + request.error);
-        //User.text = request.downloadHandler.text;
-        //User.text = request.downloadHandler.text;
-        //User.text = "error";
-        //User.text = form.GetBinaryData.ToString();
-    }
-    
-    };
-   
-    
-}
-    IEnumerator PostAudioClip()
-    {
-        string PostAudio_URL = "https://azraq-ermoszz3qq-uc.a.run.app/speech";
-        WWWForm formaudio = new WWWForm();
 
-        formaudio.AddBinaryData("file", Audiobytes);
+            request.SetRequestHeader("x-access-token", Login.token);
+            yield return request.SendWebRequest();
 
-        using (UnityWebRequest SendAudiorequest = UnityWebRequest.Post(PostAudio_URL, formaudio))
-        {
-            Debug.Log(SendAudiorequest.responseCode);
-            SendAudiorequest.SetRequestHeader("x-access-token", Login.token);
-            yield return SendAudiorequest.SendWebRequest();
-            if (SendAudiorequest.responseCode == 200)
+            // Check the response status code and response data
+            if (request.result == UnityWebRequest.Result.Success)
             {
-                Debug.Log("Request Sent");
-                Debug.Log("Response:" + SendAudiorequest.downloadHandler.text);
+                Debug.Log("WAV file sent successfully");
+                Debug.Log("Response Code: " + request.responseCode);
+                Debug.Log("Response Data: " + request.downloadHandler.text);
+            }
+            else
+            {
+                Debug.LogError("Error sending WAV file: " + request.error);
+            }
+            if (request.responseCode == 200)
+            {
+                //match
+                BravoPanel.SetActive(true);
+                if (!PagesNav.StartConvFromHome)
+                {
+                    //Increment Social Script progress
+                    if (Login.SocialScriptProgress<3)
+                    {
+                        BarController.progress++;
+                        Login.SocialScriptProgress++;
+                        StartCoroutine(IncrementProgress(Login.SocialScriptProgress));
+                    }
+                }
+                else
+                {
+                    PagesNav.StartConvFromHome = false;
+                }
+                Invoke("Back", 3);
+            }
+            else if (request.responseCode == 201)
+            {
+                //mismatch
+                TryAgainPanel.SetActive(true);
+                Invoke("closepanels", 3);
             }
 
-            if (SendAudiorequest.result != UnityWebRequest.Result.Success)
-            {
-                BackCameraRequestError = true;
-                Debug.Log(SendAudiorequest.result);
-                Debug.Log("Error Code" + SendAudiorequest.responseCode);
-            }
         }
+    }
 
+    IEnumerator IncrementProgress(int SocialProgress)
+    {
+        // convert int SocialProgress -> string IncrementProgressss
+        IncrementProgressss = SocialProgress.ToString();
+        string url = "https://azraq-ermoszz3qq-uc.a.run.app/progress";
+        WWWForm form = new WWWForm();
+        form.AddField("progress",IncrementProgressss);
+        using (UnityWebRequest request = UnityWebRequest.Post(url, form))
+        {
+
+            request.SetRequestHeader("x-access-token", Login.token);
+            yield return request.SendWebRequest();
+            string responseBody = request.downloadHandler.text;
+            Debug.Log(responseBody);
+
+            print(request.responseCode);
+            // if (request.responseCode == 200)
+            // {
+
+            // }
+            request.Dispose();
+        }
     }
 }

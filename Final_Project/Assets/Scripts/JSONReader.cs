@@ -5,5 +5,5 @@ public struct JSONReader
     public string ImageUrl;
     public string token;
     public string WWWAuthenticate;
-   
+    public string Progress;
 }

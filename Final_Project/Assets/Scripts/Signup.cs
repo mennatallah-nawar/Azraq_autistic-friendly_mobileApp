@@ -136,24 +136,27 @@ public class Signup : MonoBehaviour
     }
     IEnumerator SignupRequest(string username, string firstname, string lastname, string age, string password)
     {
+        print("hello request");
         string url = "https://azraq-ermoszz3qq-uc.a.run.app/signup";
         string loginJson = "{\"username\":\"" + username + "\",\"firstname\":\"" + firstname + "\" ,\"lastname\":\"" + lastname + "\" ,\"age\":\"" + age + "\" ,\"password\":\"" + password + "\"}";
         byte[] bodyRaw = Encoding.UTF8.GetBytes(loginJson);
 
         using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
         {
+            print("start request");
             request.uploadHandler = (UploadHandler)new UploadHandlerRaw(bodyRaw);
             request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
+            print("request handeld");
             yield return request.SendWebRequest();
 
             print(request.responseCode);
+            
             if (request.responseCode == 201)
             {
-                string responseBody = request.downloadHandler.text;
+                //string responseBody = request.downloadHandler.text;
+                SceneManager.LoadScene("Login");
                 Debug.Log(loginJson);
-                OpenLoginpage();
-
             }
 
             else if (request.responseCode == 400)
@@ -161,10 +164,10 @@ public class Signup : MonoBehaviour
                 UserExist.SetActive(true);
             }
 
-            // else if (request.responseCode == 401)
-            // {
-            //     UserNameCond.SetActive(true);
-            // }
+            else if (request.responseCode == 406)
+            {
+                UserNameCond.SetActive(true);
+            }
             request.Dispose();
         }
     }

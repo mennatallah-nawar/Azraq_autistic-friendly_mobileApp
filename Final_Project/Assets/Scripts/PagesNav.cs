@@ -5,8 +5,11 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class PagesNav : MonoBehaviour
-{
+{  
     public static bool OpenConv = false;
+
+    public static bool StartConvFromHome = false;
+
     public void OpenGameMapScene()
     {
         SceneManager.LoadScene("GamesMenu");
@@ -15,6 +18,14 @@ public class PagesNav : MonoBehaviour
     public void OpenGlassesScene()
     {
         OpenConv = false;
+        Debug.Log("camera opened");
+        SceneManager.LoadScene("BackCamera");
+    }
+
+    public void ConvFromHome()
+    {
+        OpenConv = true;
+        StartConvFromHome = true;
         Debug.Log("camera opened");
         SceneManager.LoadScene("BackCamera");
     }
@@ -49,17 +60,26 @@ public class PagesNav : MonoBehaviour
 
     public void OpenGame2()
     {
-        SceneManager.LoadScene("Wheel");
+        if (Login.SocialScriptProgress >= 1)
+        {
+            SceneManager.LoadScene("Wheel");
+        }
     }
 
     public void OpenGame3()
     {
-        SceneManager.LoadScene("Game3");
+        if (Login.SocialScriptProgress >= 2)
+        {
+            SceneManager.LoadScene("Game3");
+        }
     }
 
     public void OpenGame4()
     {
-        SceneManager.LoadScene("Game4");
+        if (Login.SocialScriptProgress == 3)
+        {
+            SceneManager.LoadScene("Game4");
+        }
     }
 
     public void OpenHomePage()

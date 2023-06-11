@@ -198,7 +198,7 @@ public class UploadPhoto : MonoBehaviour
                     Texture2D texture = new Texture2D(1, 1);
                     texture.LoadImage(request.downloadHandler.data);
 
-                    print(request.downloadHandler.data.Length);
+                    //print(request.downloadHandler.data.Length);
                     print(request.downloadHandler.data);
                     print(texture);
                     image.texture = texture;

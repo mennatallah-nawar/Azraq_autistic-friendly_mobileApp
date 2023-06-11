@@ -1871,7 +1871,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 371956573}
         m_TargetAssemblyTypeName: PagesNav, Assembly-CSharp
-        m_MethodName: OpenConvScene
+        m_MethodName: ConvFromHome
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

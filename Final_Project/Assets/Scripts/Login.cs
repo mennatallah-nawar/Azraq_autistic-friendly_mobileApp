@@ -16,6 +16,8 @@ public class Login : MonoBehaviour
     public static string password1 = null;
     [SerializeField] public JSONReader JsonObject;
     public static string token = null;
+
+    public static int SocialScriptProgress = 0;
     public static string error = null;
     public GameObject WrongPasswordText;
     public GameObject NoUserText;
@@ -126,7 +128,8 @@ public class Login : MonoBehaviour
                 Image_Ur = JsonObject.ImageUrl;
                 Debug.Log(request.downloadHandler.text);
                 Debug.Log(Image_Ur);
-
+                int.TryParse(JsonObject.Progress, out SocialScriptProgress);
+                Debug.Log(SocialScriptProgress);
                 //yield return new WaitForSeconds(2);
                 OpenHome();
             }
