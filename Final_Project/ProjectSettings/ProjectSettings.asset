@@ -155,6 +155,7 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
+    Android: com.DefaultCompany.Azraq
     Standalone: com.DefaultCompany.2DProject
   buildNumber:
     Standalone: 0
@@ -273,7 +274,7 @@ PlayerSettings:
   - m_BuildTarget: 
     m_Icons:
     - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: 1113b550b2c51144f8b44db4140dcfd4, type: 3}
+      m_Icon: {fileID: 2800000, guid: 8b14e10346654a149bc6ebe86e4ec2ac, type: 3}
       m_Width: 128
       m_Height: 128
       m_Kind: 0
